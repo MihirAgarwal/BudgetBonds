@@ -5,14 +5,17 @@ const app = express();
 
 
 const unauthenticated_routes = require('./Routers/unauthenticated_routes');
-const DB_pool = require('./DB/db')
+const DB_pool = require('./DB/db');
+const {error_handler} = require('./Error Handler/error_handler');
+const {page_not_found} = require('./utils/page_not_found');
 
 app.use(cors());
 app.use(express.json());
 
 
-app.use('/api',unauthenticated_routes)
-
+app.use('/api', unauthenticated_routes );
+app.use( '*' , page_not_found);
+app.use(error_handler);
 
 const startServer = async ()=>{    
     try {
@@ -31,3 +34,6 @@ const startServer = async ()=>{
 
 }
 startServer();
+
+
+module.exports = app;

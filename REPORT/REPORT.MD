@@ -7,27 +7,32 @@
 
 <br/>
 <br/>
-For Unauthorized Users 
+For Unauthenticated Users 
+
 <br/>
 
+**TABLE NAME =>** unauthentic_users
 <table>
 <tr>
-    <th>Email</th>
-    <th>Password</th>
+    <th>email</th>
+    <th>user_password</th>
+    <th>confirmation_code</th>
+    <th>time_ms</th>
 </tr>
 </table>
 
 
 <br/>
 <br/>
-For Authorized Users 
+For Authenticated Users 
 <br/>
 
+**TABLE NAME =>** authentic_users
 <table>
 <tr>
-    <th>Username</th>
-    <th>Email</th>
-    <th>Password</th>
+    <th>username</th>
+    <th>email</th>
+    <th>user_password</th>
 </tr>
 </table>
 
