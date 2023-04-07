@@ -5,7 +5,7 @@ module.exports.send_mail = async (email,confirmation_code)=>{
 
     try {
         let port = process.env.PORT || 2700;
-        let url = `http://localhost:${port}/api/verify/?confirmationCode=${confirmation_code}&email=${email}`;
+        let url = `https://localhost:${port}/api/user_credentials/?confirmationCode=${confirmation_code}&email=${email}`;
     
         let transporter = nodemailer.createTransport({
           service: 'gmail',

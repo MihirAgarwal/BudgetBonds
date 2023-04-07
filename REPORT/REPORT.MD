@@ -15,9 +15,8 @@ For Unauthenticated Users
 <table>
 <tr>
     <th>email</th>
-    <th>user_password</th>
     <th>confirmation_code</th>
-    <th>time_ms</th>
+    <th>signup_time</th>
 </tr>
 </table>
 
