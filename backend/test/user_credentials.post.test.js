@@ -3,7 +3,7 @@ process.env.NODE_ENV = 'TEST';
 
 const chai = require('chai');
 let chaiHttp = require('chai-http');
-let app = require('../app');
+let https_server = require('../https_server');
 let should = chai.should();
 let pool = require('../DB/db');
 
@@ -21,7 +21,7 @@ describe('POST /api/user_credentials',function(){
         {
             let request_body = {}
 
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -35,7 +35,7 @@ describe('POST /api/user_credentials',function(){
         it('Should have password',function(done){
             let request_body = {username:1}
 
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -49,7 +49,7 @@ describe('POST /api/user_credentials',function(){
         it('Username should be a string',function(done){
             let request_body = {username:1,password:123}
 
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -63,7 +63,7 @@ describe('POST /api/user_credentials',function(){
         it('Password should be a string',function(done){
             let request_body = {username:"abcd",password:123}
 
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -77,7 +77,7 @@ describe('POST /api/user_credentials',function(){
         it('Request should only have a username and password',function(done){
             let request_body = {username:"abcd",password:"123",id:5}
 
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -91,7 +91,7 @@ describe('POST /api/user_credentials',function(){
         it('username or password should not have < or >',function(done){
             let request_body = {username:"ab<>cd",password:"123456789"}
 
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -112,7 +112,7 @@ describe('POST /api/user_credentials',function(){
                 "password":"abcd"
             };
 
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -130,7 +130,7 @@ describe('POST /api/user_credentials',function(){
                 "password":"abcdabcdabcdabcdabcd"
             };
 
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -151,7 +151,7 @@ describe('POST /api/user_credentials',function(){
                 "password":"abcd"
             };
 
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -168,7 +168,7 @@ describe('POST /api/user_credentials',function(){
                 "password":"abcd"
             };
 
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{

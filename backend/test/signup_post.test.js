@@ -3,7 +3,7 @@ process.env.NODE_ENV = 'TEST';
 
 const chai = require('chai');
 let chaiHttp = require('chai-http');
-let app = require('../app');
+let https_server = require('../https_server');
 let should = chai.should();
 
 chai.use(chaiHttp);
@@ -11,8 +11,8 @@ chai.use(chaiHttp);
 
 describe('POST /api/signup',function(){
     let status = 400;
-    const port = process.env.PORT || 2700; 
-    let route = `http://localhost:${port}/api/signup`;
+    const port = process.env.PORT || 2800; 
+    let route = `https://localhost:${port}/api/signup`;
 
     context('TESTS FOR VALID REQUESTS',function(){
 
@@ -21,7 +21,7 @@ describe('POST /api/signup',function(){
                 
             let request_body = {};  
 
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -38,7 +38,7 @@ describe('POST /api/signup',function(){
                 "email":1,
             };
             
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -54,7 +54,7 @@ describe('POST /api/signup',function(){
                 "email":"abcd",
             };
             
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -71,7 +71,7 @@ describe('POST /api/signup',function(){
                 "email":"@abcd.com",
             };
             
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -88,7 +88,7 @@ describe('POST /api/signup',function(){
                 "email":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@abcd.com",
             };
             
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -105,7 +105,7 @@ describe('POST /api/signup',function(){
                 "email":'<script>alert("You are hacked!!")</script>@abcd.com',
             };
             
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -123,7 +123,7 @@ describe('POST /api/signup',function(){
                 "extra_data":"abcdefg"
             };
             
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
@@ -143,7 +143,7 @@ describe('POST /api/signup',function(){
                 "email":"rangwalahussain00@abcd.com"
             };
 
-            chai.request(app)
+            chai.request(https_server)
             .post(route)
             .send(request_body)
             .end((err,res)=>{
