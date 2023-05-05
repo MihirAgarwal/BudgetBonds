@@ -15,30 +15,6 @@ app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 
-const bcrypt = require('bcrypt');
-app.get('/',(req,res)=>{
-    const pwd_list = ['sp1233',
-    'hussain22923',
-    'kevalrocks000',
-    'password',
-    'messigoat10',
-    'manchesterisblue',
-    'iamthegoat',
-    'idrathermarryshaun',
-    'cantkeepmyhandstomyself',
-    'ishaandilookgreattogether'];
-
-    let hashed_pwd_list = []
-    for(let i=0 ; i<pwd_list.length ; i+=1)
-    {
-        const salt = bcrypt.genSaltSync( parseInt(process.env.SALT_ROUNDS) ) ;
-        let hashed_pwd = bcrypt.hashSync(pwd_list[i] , salt);
-        hashed_pwd_list.push(hashed_pwd);
-    }
-
-    res.json({"hashed":hashed_pwd_list});
-})
-
 app.use('/api', router );
 app.use( '*' , page_not_found);
 app.use(error_handler);
