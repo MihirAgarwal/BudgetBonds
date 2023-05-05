@@ -1,0 +1,24 @@
+.domine {
+    font-family: 'Domine','sans-serif';
+}
+
+body{
+    background-color: #003366;
+    color:#E5E5E5;
+}
+
+.dayexpCard{
+    margin-bottom: 0.5rem;
+}
+
+.addExp{
+    position:fixed; 
+    width: 50px;
+    height: auto;
+    left:90%; 
+    top:85%;
+}
+
+.addExp:hover{
+    cursor: pointer;
+}
