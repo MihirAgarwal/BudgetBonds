@@ -42,9 +42,12 @@ export default function SignIn() {
     Axios.post('http://localhost:2600/api/login',{
         username: data.get('username'),
         password: data.get('password'),
-    }).then(res => {
+    },{credentials: 'include'}).then( res => {
+        console.log(res);
         if(res.data.message==="User Login Successful") {
-            navigate("/");
+          let response =  Axios.post('http://localhost:2600/api/refresh_token');
+          console.log(response);
+          navigate("/home");
         }
     }).catch(res => {
       alert(res.response.data.message);

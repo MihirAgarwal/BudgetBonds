@@ -4,13 +4,10 @@ import {Outlet, Route, BrowserRouter as Router, Routes}  from "react-router-dom"
 import Home from "./pages/Home";
 import Groups from "./pages/Groups";
 import AddGroup from "./pages/AddGroup";
-<<<<<<< HEAD
 import SignUp from "./pages/Signup";
-=======
 import SignIn from "./pages/SignIn";
 import Addexpense from "./pages/Addexpense";
 import {QueryClient,QueryClientProvider} from "@tanstack/react-query";
->>>>>>> d2f2138389c938bc187bff1240a2080c6debb483
 
 function App() {
   const client = new QueryClient();
@@ -18,7 +15,7 @@ function App() {
     <QueryClientProvider client = {client}>
     <Router>
       <Routes>
-      <Route path = "/login" element={<SignIn/>} />
+      <Route path = "/" index element={<SignIn/>} />
       <Route path = "/addExpense" element={<Addexpense/>} />
       <Route path = "/addGroup" element={<AddGroup />} />
       <Route path = "/signup" element={<SignUp />} />
@@ -29,8 +26,8 @@ function App() {
         <Outlet></Outlet>
         </>
       }>
-      <Route path = "/" index element={<Home />} />
-      <Route path = "/Groups" element={<Groups />} />
+      <Route path = "/home" element={<Home />} />
+      <Route path = "/groups" element={<Groups />} />
       </Route>
       </Routes>
     </Router>

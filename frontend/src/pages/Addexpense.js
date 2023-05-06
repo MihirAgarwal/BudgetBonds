@@ -10,16 +10,37 @@ import { Grid } from '@mui/material';
 import Option from '@mui/joy/Option';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack'
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
+import Axios from 'axios';
 
 
 const Addexpense = () => {
+    const navigate = useNavigate();
+
     var date = new Date();
     var current_date = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate()+"T"+date.getHours()+":"+date.getMinutes();
     const [dateTime, setDateTime] = React.useState(dayjs(current_date));
     const [category, setCategory] = React.useState("Category");
     const [amount,setAmount] = React.useState(0);
     const [expenseName,setExpenseName] = React.useState("");
+
+    function handleSubmit(e){
+      e.preventDefault();
+      Axios.post('http://localhost:2600/api/personal_expense',{
+        datetime:dateTime,
+        activity_name:expenseName,
+        activity_type:category,
+        amount,
+      },{credentials: 'include'}).then(res => {
+          if(res.data.message==="EXPENSE ADDED SUCCESSFULLY!!") {
+              navigate("/home");
+          }
+      }).catch(res => {
+        alert(res.response.data.message);
+      })
+    }
+
+
     return (
         <div style = {{marginTop:"5rem",marginLeft:"40%"}}>
         <div className='DateSelector'>
@@ -96,7 +117,7 @@ const Addexpense = () => {
 
     <div className='AddExpenseButtons'>
     <Stack direction="row" spacing={2}>
-      <Button variant="contained" color="success">
+      <Button variant="contained" color="success" onClick={(e) => {handleSubmit(e);}}>
         Add Expense
       </Button>
       <Link exact to="/"><Button variant="outlined" color="error">

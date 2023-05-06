@@ -36,9 +36,10 @@ module.exports.login_post = async (req,res,next)=>{
             expiresIn: process.env.REFRESH_TOKEN_LIFE
         });
 
+        console.log(refreshToken);
         // setting token in response cookies
-        res.cookie("accessToken" , accessToken , { httpOnly : true , secure : true , sameSite : 'lax' } );
-        res.cookie("refreshToken" , refreshToken , { httpOnly : true , secure : true , sameSite : 'lax' } );
+        res.cookie("accessToken" , accessToken , { httpOnly : true ,  sameSite : 'lax' } );
+        res.cookie("refreshToken" , refreshToken , { httpOnly : true , sameSite : 'lax' } );
         
         //sending the response
         res.json({ "message":"User Login Successful"});
