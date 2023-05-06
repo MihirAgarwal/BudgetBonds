@@ -15,9 +15,8 @@ For Unauthenticated Users
 <table>
 <tr>
     <th>email</th>
-    <th>user_password</th>
     <th>confirmation_code</th>
-    <th>time_ms</th>
+    <th>signup_time</th>
 </tr>
 </table>
 
@@ -43,12 +42,15 @@ For Authenticated Users
 For Groups
 <br/>
 
+**TABLE NAME =>** 
+group_details
 <table>
 <tr>
-    <th>GroupName</th>
-    <th>GroupID</th>
-    <th>MadeBy</th>
-    <th>Icon</th>
+    <th>group_name</th>
+    <th>group_id</th>
+    <th>made_by</th>
+    <th>icon</th>
+    <th>is_deleted</th>
 </tr>
 </table>
 
@@ -57,12 +59,15 @@ For Groups
 <br/>
 <br/>
 Group Requests
+
+**TABLE NAME =>** 
+group_requests
 <br/>
 
 <table>
 <tr>
-    <th>GroupID</th>
-    <th>Username</th>
+    <th>group_id</th>
+    <th>username</th>
 </tr>
 </table>
 
