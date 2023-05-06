@@ -55,50 +55,57 @@ function validate_request(request_body)
 
 async function add_activity_to_activities_table(group_id,activity_name,activity_type,username)
 {
-    // const result = await pool.execute(`INSERT INTO activities (group_id,activity_name,activity_type,inserted_by,is_personal) VALUES (?,?,?,?,?)`,[group_id,activity_name,activity_type,username,false]); 
-    // const inserted_id = result[0]["insertId"];
-    // console.log(inserted_id);
-    return 1;
+    const result = await pool.execute(`INSERT INTO activities (group_id,activity_name,activity_type,inserted_by,is_personal) VALUES (?,?,?,?,?)`,[group_id,activity_name,activity_type,username,false]); 
+    const inserted_id = result[0]["insertId"];
+    console.log(inserted_id);
+    return inserted_id;
 }
 
 
 async function add_to_activity_expenses_table( group_id , activity_id , expenses )
 {
-    // let expenses_query_array = [];
-    // let expenses_query = `INSERT INTO activity_expenses (activity_id,username,paid,spent,income) VALUES `;
+    let expenses_query_array = [];
+    let expenses_query = `INSERT INTO activity_expenses (activity_id,username,paid,spent,income) VALUES `;
     
-    // const update_query = `UPDATE group_members SET spent = spent + ? , paid = paid + ? WHERE group_id = ? AND  username = ?`
-    // for( let i=0 ; i<expenses.length ; i++)
-    // {
-    //     let {username,paid,spent} = expenses[i];
-    //     // console.log( username , paid , spent );
+    const update_query = `UPDATE group_members SET spent = spent + ? , paid = paid + ? WHERE group_id = ? AND  username = ?`
+    for( let i=0 ; i<expenses.length ; i++)
+    {
+        let {username,paid,spent} = expenses[i];
+        // console.log( username , paid , spent );
         
-    //     expenses_array = [ ... [activity_id,username,paid,spent,0] ];
-    //     expenses_query = expenses_query + `(?,?,?,?,?)`;
+        expenses_query_array.push(activity_id); 
+        expenses_query_array.push(username);
+        expenses_query_array.push(paid);
+        expenses_query_array.push(spent);
+        expenses_query_array.push(0);
 
-    //     if(i!=expenses.length-1) expenses_query+=` , `;
+        expenses_query = expenses_query + `(?,?,?,?,?)`;
 
-    //     await pool.execute(update_query,[spent,paid,group_id,username]);
-    // }
-    // console.log(expenses_query_array);
-    // console.log(expenses_query);
-    // await pool.execute(expenses_query,expenses_query_array);
+        if(i!=expenses.length-1) expenses_query+=` , `;
+
+        await pool.execute(update_query,[spent,paid,group_id,username]);
+    }
+    //console.log("EXPENSE ARRAY",expenses_query_array);
+    //console.log("EXPENSE QUERY",expenses_query);
+    await pool.execute(expenses_query,expenses_query_array);
 
 }
 
 
 async function add_to_logs(group_id,activity_name,username)
 {
-    // const query = `INSERT INTO user_logs (group_id,log_by,user_log) VALUES (?,?,?,?)`;
-    // let user_log = `Activity ${activity_name} was added by ${username}`;
-    // await pool.execute(query,[group_id,username,user_log]);
+    const query = `INSERT INTO user_logs (group_id,log_by,user_log) VALUES (?,?,?)`;
+    let user_log = `Activity ${activity_name} was added by ${username}`;
+    console.log("LOGS QUERY  ",query );
+    console.log("QUERY ARRAY  ",[group_id,username,user_log]);
+    await pool.execute(query,[group_id,username,user_log]);
 }
 
 
 async function add_payments_to_settle_table(group_id,activity_id,expenses)
 {
     const data_array_objects = calculate_payments_to_be_settled(expenses);
-    console.log(data_array_objects);
+    //console.log(data_array_objects);
     if(data_array_objects.length > 0)
     {
         let settles_array = [];
@@ -106,17 +113,24 @@ async function add_payments_to_settle_table(group_id,activity_id,expenses)
         
         for(let i = 0 ; i < data_array_objects.length ; i++)
         {
+            
             let pay_amount = data_array_objects[i]["pay_amount"];
             let pay_by = data_array_objects[i]["pay_by"];
             let pay_to = data_array_objects[i]["pay_to"];
 
-            settles_array = [ ... [ group_id , activity_id , pay_amount , pay_to , pay_by ] ];
+            settles_array.push(parseInt(group_id));
+            settles_array.push(activity_id);
+            settles_array.push(pay_amount);
+            settles_array.push(pay_to);
+            settles_array.push(pay_by);
+            
             settles_query = settles_query + `(?,?,?,?,?)`;
             if( i != data_array_objects.length-1 ) settles_query = settles_query + ` , `;
+            
         }
 
-        console.log(settles_query);
-        console.log(settles_array);
+        console.log("SETTLES QUERY ============> ",settles_query);
+        console.log("SETTLES ARRAY ============>",settles_array);
         await pool.execute( settles_query , settles_array );
     }
 }
@@ -134,11 +148,12 @@ function calculate_payments_to_be_settled(expenses)
         if( -1*excessive_spent[left_pointer] == excessive_spent[right_pointer])
         {
             let obj = {
-                "pay_to" : usernames[right_pointer],
-                "pay_by" : usernames[left_pointer],
+                "pay_to" : usernames[left_pointer],
+                "pay_by" : usernames[right_pointer],
                 "pay_amount" : excessive_spent[right_pointer]
             };
-            data_array_objects.push(obj);
+            console.log("OBJ=>",obj);
+            if(obj['pay_amount']!==0)   data_array_objects.push(obj);
             right_pointer = right_pointer - 1;
             left_pointer = left_pointer + 1;
         }
@@ -146,11 +161,11 @@ function calculate_payments_to_be_settled(expenses)
         else if( -1*excessive_spent[left_pointer] > excessive_spent[right_pointer])
         {
             let obj = {
-                "pay_to" : usernames[right_pointer],
-                "pay_by" : usernames[left_pointer],
+                "pay_to" : usernames[left_pointer],
+                "pay_by" : usernames[right_pointer],
                 "pay_amount" : excessive_spent[right_pointer]
             };
-            data_array_objects.push(obj);
+            if(obj['pay_amount']!==0)   data_array_objects.push(obj);
             excessive_spent[left_pointer] = excessive_spent[left_pointer] + excessive_spent[right_pointer];
             right_pointer = right_pointer - 1;
         }
@@ -158,16 +173,16 @@ function calculate_payments_to_be_settled(expenses)
         else if( -1*excessive_spent[left_pointer] < excessive_spent[right_pointer] )
         {
             let obj = {
-                "pay_to" : usernames[right_pointer],
-                "pay_by" : usernames[left_pointer],
+                "pay_to" : usernames[left_pointer],
+                "pay_by" : usernames[right_pointer],
                 "pay_amount" : -1*excessive_spent[left_pointer]
             };
-            data_array_objects.push(obj);
+            if(obj['pay_amount']!==0)   data_array_objects.push(obj);
             excessive_spent[right_pointer] = excessive_spent[left_pointer] + excessive_spent[right_pointer];
             left_pointer = left_pointer + 1;
         }
     }
-
+    console.log("DATA ======> ",data_array_objects)
     return data_array_objects;
 }
 
@@ -176,28 +191,29 @@ function format_data(expenses)
     let usernames = [];
     let excessive_spent = [];
 
+    //console.log("EXPENSES: ",expenses);
     for( let i = 0 ; i < expenses.length ; i++ )
     {
-        excessive_spent.push( { "index" : i , "value" : expenses[0]["spent"] - expenses[0]["paid"] } ) ;
+        excessive_spent.push( { "index" : i , "value" : expenses[i]["spent"] - expenses[i]["paid"] } ) ;
     }
-    // console.log(expenses)
+    //console.log("EXCESSIVE SPENT: ",excessive_spent);
     
     excessive_spent.sort((a, b) => {
         return a.value - b.value;
     });
-    // console.log("EXCESSIVE SPENT: ",excessive_spent);
+    //console.log("EXCESSIVE SPENT: ",excessive_spent);
 
     for( let i = 0 ; i < expenses.length ; i++ )
     {
-        let username = expenses[ excessive_spent[i]["index"] ]["username"];
+        let username = expenses[ excessive_spent[i]["index"] ]["username"] ;
         usernames.push( username );
         excessive_spent[i] = excessive_spent[i]["value"] ;
     }
 
-    //console.log("FROM FORMAT DATA: ",usernames,excessive_spent);
+    console.log("FROM FORMAT DATA: ",usernames,excessive_spent);
     return {"usernames":usernames,"excessive_spent":excessive_spent};
 }
 
 // spent - paid
-// left pointer gives money
-// right pointer takes money
+// right pointer gives money
+// left pointer takes money

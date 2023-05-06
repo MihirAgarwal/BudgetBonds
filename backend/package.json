@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon https_server.js",
+    "start": "nodemon http_server.js",
     "test": "mocha"
   },
   "keywords": [],
