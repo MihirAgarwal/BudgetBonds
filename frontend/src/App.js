@@ -2,15 +2,23 @@ import React from "react";
 import Header from "./components/Header";
 import {Outlet, Route, BrowserRouter as Router, Routes}  from "react-router-dom";
 import Home from "./pages/Home";
-import Addexpense from "./pages/Addexpense";
 import Groups from "./pages/Groups";
 import AddGroup from "./pages/AddGroup";
+<<<<<<< HEAD
 import SignUp from "./pages/Signup";
+=======
+import SignIn from "./pages/SignIn";
+import Addexpense from "./pages/Addexpense";
+import {QueryClient,QueryClientProvider} from "@tanstack/react-query";
+>>>>>>> d2f2138389c938bc187bff1240a2080c6debb483
 
 function App() {
+  const client = new QueryClient();
   return (
+    <QueryClientProvider client = {client}>
     <Router>
       <Routes>
+      <Route path = "/login" element={<SignIn/>} />
       <Route path = "/addExpense" element={<Addexpense/>} />
       <Route path = "/addGroup" element={<AddGroup />} />
       <Route path = "/signup" element={<SignUp />} />
@@ -26,6 +34,7 @@ function App() {
       </Route>
       </Routes>
     </Router>
+    </QueryClientProvider>
   );
 }
 

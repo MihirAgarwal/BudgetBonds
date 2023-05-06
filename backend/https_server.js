@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const cookieParser = require('cookie-parser');
 
@@ -31,13 +32,16 @@ const startServer = async ()=>{
         
             const port = process.env.PORT || 2800 ;
 
-            const server = https.createServer({
+            const https_server = https.createServer({
                 key: fs.readFileSync('./certificate/key.pem'),
                 cert: fs.readFileSync('./certificate/certificate.pem') 
             },app);
 
-            server.listen(port,()=>{  
-                console.log(`HTTPS server is listening on port ${port}`);
+            const http_server = http.createServer(app);
+            //https_server.listen(4444);
+
+            app.listen(port,()=>{  
+                console.log(`HTTP server is listening on port ${port}`);
             });
         }
         else
