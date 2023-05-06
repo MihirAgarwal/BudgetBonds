@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Addexpense from "./pages/Addexpense";
 import Groups from "./pages/Groups";
 import AddGroup from "./pages/AddGroup";
+import SignUp from "./pages/Signup";
 
 function App() {
   return (
@@ -12,6 +13,8 @@ function App() {
       <Routes>
       <Route path = "/addExpense" element={<Addexpense/>} />
       <Route path = "/addGroup" element={<AddGroup />} />
+      <Route path = "/signup" element={<SignUp />} />
+      
       <Route element = {
         <>
         <Header />
