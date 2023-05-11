@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { create_error } = require('../utils/create_error');
 const pool = require('../DB/db');
 
@@ -6,25 +7,30 @@ const pool = require('../DB/db');
 module.exports.settles_get = async (req,res,next) => {
 
     try 
-    {    
+    {   
+        req.body['page_no'] = req.query.page_no; 
+        req.body['username_2'] = req.query.username_2; 
         req.body['group_id'] = req.params.group_id;
+    
         const request_body = req.body;
         const is_valid_request = validate_request(request_body);
         if(is_valid_request instanceof Error) throw is_valid_request ;
 
-        const { group_id , username , username_2 , page_no } = req.body ;
+        console.log(request_body);
+        const { group_id , username , username_2 , page_no } = request_body ;
 
-        let rows,cols;
-        if(page_no === -1)
+        let result;
+        if(parseInt(page_no) === -1)
         {
-            [rows,cols] = await get_aggregated_settles( group_id , username );
+            result = await get_aggregated_settles( group_id , username );
         }
         else
         {
-            [rows,cols] = await get_settles_of_two( group_id , username , username_2 , page_no );
+            result = await get_settles_of_two( group_id , username , username_2 , page_no );
+            console.log("RESULT ==> ",result);
         }
 
-        res.json({"message":"SETTLES GET"});
+        res.json({"message":result});
     } 
     catch (error) 
     {
@@ -41,9 +47,13 @@ function validate_request(request_body)
 
 async function get_aggregated_settles( group_id , username )
 {
-    const [rows,cols] = await pool.execute(`CALL get_aggregated_group_settles(?,?)`, [ group_id , username ] );
-    console.log(rows);
+    const query = `SELECT group_id,SUM(pay_amount) as give_amount,pay_to,pay_by FROM settles WHERE group_id=? AND is_settled=0 GROUP BY group_id,pay_to,pay_by HAVING pay_to=? OR pay_by=?`
+    const [rows,cols] = await pool.execute( query, [ group_id , username , username ] );
+    console.log("ROWS: ",rows);
+    console.log("\n\n\n");
+    
     const processed_data = get_processed_data(rows);
+    console.log("Processed Data: ",processed_data)
     return processed_data;
 }
 
@@ -103,12 +113,15 @@ function get_processed_data(data)
         }
     }
 
-    console.log(data);
     return data ;
 }
 
 
 async function get_settles_of_two( group_id , username , username2 , page_no )
 {
-    return ;
+    const query = `CALL get_group_settles_of_two_members(?,?,?,?,?)`;
+    const start_row = page_no*process.env.PAGE_SIZE;
+    const end_row = (page_no+1)*process.env.PAGE_SIZE;
+    const [rows,cols] = await pool.execute( query, [ group_id , username , username2 , start_row , end_row ] );
+    return rows[0];
 }

@@ -230,7 +230,7 @@ BEGIN
     HAVING ( pay_to = Username OR pay_by = Username ) AND group_id=Group_id;
 END //
 DELIMITER ;
-CALL get_aggregated_group_settles(1,'abc123');
+CALL get_aggregated_group_settles(1,'Shaun Phijo');
 DROP PROCEDURE get_aggregated_group_settles;
 
 
