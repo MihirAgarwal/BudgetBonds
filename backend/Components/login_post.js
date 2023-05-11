@@ -38,8 +38,8 @@ module.exports.login_post = async (req,res,next)=>{
 
         console.log(refreshToken);
         // setting token in response cookies
-        res.cookie("accessToken" , accessToken , { httpOnly : true ,  sameSite : 'lax' } );
-        res.cookie("refreshToken" , refreshToken , { httpOnly : true , sameSite : 'lax' } );
+        res.cookie("accessToken" , accessToken , { httpOnly : false ,  sameSite : 'lax' } );
+        res.cookie("refreshToken" , refreshToken , { httpOnly : false , sameSite : 'lax' } );
         
         //sending the response
         res.json({ "message":"User Login Successful"});

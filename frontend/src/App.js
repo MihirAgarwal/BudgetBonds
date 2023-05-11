@@ -8,6 +8,9 @@ import SignUp from "./pages/Signup";
 import SignIn from "./pages/SignIn";
 import Addexpense from "./pages/Addexpense";
 import {QueryClient,QueryClientProvider} from "@tanstack/react-query";
+import Activities from "./pages/Activities";
+import GroupHeader from "./components/GroupHeader";
+import Logs from "./pages/Logs";
 
 function App() {
   const client = new QueryClient();
@@ -19,6 +22,16 @@ function App() {
       <Route path = "/addExpense" element={<Addexpense/>} />
       <Route path = "/addGroup" element={<AddGroup />} />
       <Route path = "/signup" element={<SignUp />} />
+      <Route element = {
+        <>
+        <GroupHeader />
+        <Outlet></Outlet>
+        </>
+      }>
+        <Route path = "/activities" element={<Activities />} />
+        <Route path = "/logs" element={<Logs />} />
+      </Route>
+      
       
       <Route element = {
         <>

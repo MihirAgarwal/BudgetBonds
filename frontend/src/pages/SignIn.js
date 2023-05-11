@@ -1,4 +1,4 @@
-import * as React from 'react';
+import {useEffect,React}from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -31,28 +31,31 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
+
+
     const navigate = useNavigate();
     const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      Axios.post('http://localhost:2600/api/login',{
       username: data.get('username'),
       password: data.get('password'),
-    });
-    Axios.post('http://localhost:2600/api/login',{
-        username: data.get('username'),
-        password: data.get('password'),
-    },{credentials: 'include'}).then( res => {
+    },{withCredentials: true}).then( res => {
         console.log(res);
         if(res.data.message==="User Login Successful") {
-          let response =  Axios.post('http://localhost:2600/api/refresh_token');
-          console.log(response);
+          // console.log(response);
           navigate("/home");
+
         }
     }).catch(res => {
       alert(res.response.data.message);
     })
+    console.log({
+      username: data.get('username'),
+      password: data.get('password'),
+    });
   };
+
 
   return (
     <ThemeProvider theme={theme}>

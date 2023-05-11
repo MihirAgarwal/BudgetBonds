@@ -6,7 +6,7 @@ const Navitem=(props)=>{
       <Link
       variant="button"
       color="#E5E5E5"
-      href={props.name==="Personal" ? "/":props.name}
+      href={props.name==="Personal" ? "/home":props.name}
       sx={{ my: 1, mx: 1.5 }}
     >
       {props.name}

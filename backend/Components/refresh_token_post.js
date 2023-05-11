@@ -8,7 +8,7 @@ module.exports.refresh_token_post = (req,res,next)=>{
     {
         // Taken the refresh token from cookies
         let refresh_token = req.cookies['refreshToken'];
-        console.log("REFRESH TOKEN ",refresh_token);
+        console.log("REFRESH TOKEN ",req);
         // If refresh token is undefined that means refresh token is expired
         if(typeof refresh_token === 'undefined') throw create_error('Please Login Again!!!',401);
 
