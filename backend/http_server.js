@@ -9,13 +9,29 @@ const {page_not_found} = require('./utils/page_not_found');
 const router = require('./Routers/router');
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+    origin:'http://localhost:3000', 
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200
+}));
+
 app.use(cookieParser());
 app.use(express.json());
+app.use(function(req, res, next) {  
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});  
+
+
+
 
 app.use('/api', router );
 app.use( '*' , page_not_found);
 app.use(error_handler);
+
+
 
 const server = http.createServer(app);
 

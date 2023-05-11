@@ -32,10 +32,10 @@ const startServer = async ()=>{
         
             const port = process.env.PORT || 2800 ;
 
-            const https_server = https.createServer({
-                key: fs.readFileSync('./certificate/key.pem'),
-                cert: fs.readFileSync('./certificate/certificate.pem') 
-            },app);
+            // const https_server = https.createServer({
+            //     key: fs.readFileSync('./certificate/key.pem'),
+            //     cert: fs.readFileSync('./certificate/certificate.pem') 
+            // },app);
 
             const http_server = http.createServer(app);
             //https_server.listen(4444);

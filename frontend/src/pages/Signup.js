@@ -36,10 +36,15 @@ export default function SignUp() {
     console.log({
       email: data.get('email'),
     });
-    Axios.post('https://localhost:2600/api/login',{
+    Axios.post('http://localhost:2600/api/signup',{
         email: data.get('email'),
     }).then(res=>{
+        console.log(res);
+        alert("A mail has been sent to you!");
         navigate("/");
+    }).catch(res => {
+      alert("User already registered!");
+      navigate("/");
     })
   };
 
@@ -85,7 +90,7 @@ export default function SignUp() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="/login" variant="body2">
+                <Link exact to="/">
                   Already have an account? Sign in             
                 </Link>
               </Grid>

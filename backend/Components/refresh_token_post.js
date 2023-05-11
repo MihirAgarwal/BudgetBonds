@@ -8,7 +8,7 @@ module.exports.refresh_token_post = (req,res,next)=>{
     {
         // Taken the refresh token from cookies
         let refresh_token = req.cookies['refreshToken'];
-        console.log("REFRESH TOKEN ",refresh_token);
+        console.log("REFRESH TOKEN ",req);
         // If refresh token is undefined that means refresh token is expired
         if(typeof refresh_token === 'undefined') throw create_error('Please Login Again!!!',401);
 
@@ -19,7 +19,7 @@ module.exports.refresh_token_post = (req,res,next)=>{
         console.log("B");
         
         // Setting access token in the response cookie
-        res.cookie("accessToken" , new_access_token , { httpOnly : true , secure : true , sameSite: 'lax' } );
+        res.cookie("accessToken" , new_access_token , { httpOnly : true , sameSite: 'lax' } );
         res.json({"message":"Token refreshed!!"});
 
     } catch (error) {
