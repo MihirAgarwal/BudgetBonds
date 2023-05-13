@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -7,19 +6,10 @@ import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import { Grid } from '@mui/material';
-import Expense from './Expense';
 
-const DayExpense = () => {
-    return (
-    <Card className='dayexpCard'>
-                <CardContent
-                sx={{
-                    backgroundColor: (theme) =>
-                      theme.palette.mode === 'light'
-                        ? theme.palette.grey[200]
-                        : theme.palette.grey[700],
-                  }}
-                >
+const Expense = () => {
+  return (
+    <CardContent>
                   <Box
                     sx={{
                       display: 'flex',
@@ -29,11 +19,20 @@ const DayExpense = () => {
                     <Grid container spacing={4} justifyContent="space-evenly">
                     <Grid
                     item
-                    key="expDate"
-                    md={8}
+                    key="expCategory"
+                    md={2}
                 >
-                    <Typography variant="h6" fontFamily={"Domine"} color="text.primary">
-                      Date
+                    <Typography align="right" variant="p" color="text.primary">
+                      Category
+                    </Typography>
+                </Grid>
+                <Grid
+                    item
+                    key="expName"
+                    md={6}
+                >
+                    <Typography align="left" variant="p" color="text.primary">
+                      Expense Name
                     </Typography>
                 </Grid>
                 <Grid
@@ -41,7 +40,7 @@ const DayExpense = () => {
                     key="expIncome"
                     md={2}
                 >
-                    <Typography variant="h6" fontFamily={"Domine"} color="#449E48">
+                    <Typography align="right" variant="p" color="#449E48">
                       100
                     </Typography>
                 </Grid>
@@ -50,18 +49,17 @@ const DayExpense = () => {
                     key="expExpense"
                     md={2}
                 >
-                    <Typography variant="h6" fontFamily={"Domine"} color="#ff0000">
+                    <Typography align="right" variant="p" color="#ff0000">
                       0
                     </Typography>
                 </Grid>
                     
                 </Grid>
+                
                   </Box>
-                  
+                
                 </CardContent>
-                <Expense />
-              </Card>
-    )
+  )
 }
 
-export default DayExpense;
+export default Expense

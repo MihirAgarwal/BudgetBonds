@@ -11,6 +11,8 @@ import {QueryClient,QueryClientProvider} from "@tanstack/react-query";
 import Activities from "./pages/Activities";
 import GroupHeader from "./components/GroupHeader";
 import Logs from "./pages/Logs";
+import Reports from "./pages/Reports";
+import Accounts from "./pages/Accounts";
 
 function App() {
   const client = new QueryClient();
@@ -45,6 +47,9 @@ function App() {
         }>
           <Route path = "/home" element={<Home />} />
           <Route path = "/groups" element={<Groups />} />
+          <Route path = "/reports" element={<Reports />} />
+          <Route path = "/accounts" element={<Accounts />} />
+
         </Route>
       
       </Routes>
