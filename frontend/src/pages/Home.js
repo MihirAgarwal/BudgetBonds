@@ -4,25 +4,38 @@ import MonthInput from "../components/MonthInput";
 import plus from "../components/images/plus.png";
 import { Link,Routes,Route,BrowserRouter as Router } from "react-router-dom";
 import Axios from "axios"
+import { useQuery } from "@tanstack/react-query";
 
 const Home = () => {
 
-     useEffect(()=>{
-        let response =  Axios.post('http://localhost:2600/api/refresh_token');
-        response.then((r)=>console.log(r)).catch((err)=>console.log(err));
-     },[])
+    let pgNo=0;
+    // var current_date = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate()+"T"+date.getHours()+":"+date.getMinutes();
+    const {}=useQuery(["expenseList"],()=>{
+        Axios.get(`http://localhost:2600/api/personal_expense/?pageNo=${pgNo}`,{withCredentials: true})
+        .then((res)=>{
+            console.log(res.data);
+        }).catch(res => {
+            console.log(res);
+            alert(res.response.data.message);
+        })
+    })
+
+    //  useEffect(()=>{
+    //     let response =  Axios.get('http://localhost:2600/api/');
+        
+    //  },[])
 
     return (
         <div style={{width:"80%",marginLeft:"10%"}}>
         <MonthInput></MonthInput>
+        {/* <DayExpense></DayExpense>
         <DayExpense></DayExpense>
         <DayExpense></DayExpense>
         <DayExpense></DayExpense>
         <DayExpense></DayExpense>
         <DayExpense></DayExpense>
         <DayExpense></DayExpense>
-        <DayExpense></DayExpense>
-        <DayExpense></DayExpense>
+        <DayExpense></DayExpense> */}
         
 
         <Link exact to="/addExpense"><img src={plus} className="addExp"/></Link>   

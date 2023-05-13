@@ -8,7 +8,7 @@ module.exports.personal_expense_get = async (req,res,next)=>{
 
     try 
     {
-        console.log(req.query);
+        console.log(req);
         let {pageNo,date,Name} = req.query;
         let {username} = req.body;
         //console.log(pageNo , Date , Name , username);

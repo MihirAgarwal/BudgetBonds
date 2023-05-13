@@ -16,7 +16,7 @@ app.use(cors());
 app.use(cookieParser());
 app.use(express.json());
 
-app.use('/api', router );
+//app.use('/api', router );
 app.use( '*' , page_not_found);
 app.use(error_handler);
 

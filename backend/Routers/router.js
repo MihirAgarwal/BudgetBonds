@@ -44,6 +44,7 @@ Router.route('/login')
 Router.route('/personal_expense')
 .post(check_access_token,personal_expense_post)
 .get(check_access_token,personal_expense_get);
+//.get(personal_expense_get);
 
 // for creating groups      POST=> CREATE NEW GROUP     GET=> RETERIVE ALREADY CREATED GROUPS  
 Router.route('/groups')

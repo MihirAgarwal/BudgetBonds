@@ -48,7 +48,8 @@ export default function SignIn() {
 
         }
     }).catch(res => {
-      alert(res.response.data.message);
+      console.log(res);
+      // alert(res.response.data.message);
     })
     console.log({
       username: data.get('username'),

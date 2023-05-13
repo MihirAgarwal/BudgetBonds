@@ -17,32 +17,38 @@ function App() {
   return (
     <QueryClientProvider client = {client}>
     <Router>
+
+
       <Routes>
-      <Route path = "/" index element={<SignIn/>} />
-      <Route path = "/addExpense" element={<Addexpense/>} />
-      <Route path = "/addGroup" element={<AddGroup />} />
-      <Route path = "/signup" element={<SignUp />} />
-      <Route element = {
-        <>
-        <GroupHeader />
-        <Outlet></Outlet>
-        </>
-      }>
-        <Route path = "/activities" element={<Activities />} />
-        <Route path = "/logs" element={<Logs />} />
-      </Route>
+        <Route path = "/" index element={<SignIn/>} />
+        <Route path = "/addExpense" element={<Addexpense/>} />
+        <Route path = "/addGroup" element={<AddGroup />} />
+        <Route path = "/signup" element={<SignUp />} />
+        
+
+        <Route element = {
+          <>
+          <GroupHeader />
+          <Outlet></Outlet>
+          </>
+        }>
+          <Route path = "/activities" element={<Activities />} />
+          <Route path = "/logs" element={<Logs />} />
+        </Route>
+        
+        
+        <Route element = {
+          <>
+          <Header />
+          <Outlet></Outlet>
+          </>
+        }>
+          <Route path = "/home" element={<Home />} />
+          <Route path = "/groups" element={<Groups />} />
+        </Route>
       
-      
-      <Route element = {
-        <>
-        <Header />
-        <Outlet></Outlet>
-        </>
-      }>
-      <Route path = "/home" element={<Home />} />
-      <Route path = "/groups" element={<Groups />} />
-      </Route>
       </Routes>
+
     </Router>
     </QueryClientProvider>
   );
