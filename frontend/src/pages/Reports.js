@@ -1,7 +1,7 @@
 
 const Reports = () => {
   return (
-    <div>Report s</div>
+    <div>Reports</div>
   )
 }
 

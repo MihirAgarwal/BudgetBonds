@@ -1,4 +1,5 @@
 import Activity from "../components/Activity";
+import { Link } from "react-router-dom";
 
 
 const Activities = () => {
@@ -6,7 +7,7 @@ const Activities = () => {
 
   return (
     <div style={{width:"80%",marginLeft:"10%"}}>
-    <Activity />
+    <Link style={{textDecoration: 'none'}} exact to="/activity"><Activity /></Link>
     </div>
   )
 }

@@ -13,6 +13,7 @@ import GroupHeader from "./components/GroupHeader";
 import Logs from "./pages/Logs";
 import Reports from "./pages/Reports";
 import Accounts from "./pages/Accounts";
+import Announcements from "./pages/Announcements";
 
 function App() {
   const client = new QueryClient();
@@ -36,6 +37,7 @@ function App() {
         }>
           <Route path = "/activities" element={<Activities />} />
           <Route path = "/logs" element={<Logs />} />
+          <Route path = "/announcement" element={<Announcements />} />
         </Route>
         
         
