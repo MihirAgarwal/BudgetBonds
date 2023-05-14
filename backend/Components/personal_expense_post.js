@@ -66,7 +66,7 @@ async function add_expense(datetime,activity_name,activity_type,is_personal,user
         
 
         // GroupID=null , ActivityID=AutoIncrement , ActivityName=activity_name , ActivityType=activity_type , InsertedBy=username , DateTime=datetime , IsPersonal=true
-        let result = await pool.execute(`INSERT INTO activities (ActivityName,ActivityType,InsertedBy,DateTime,IsPersonal) VALUES (?,?,?,?,?)`,
+        let result = await pool.execute(`INSERT INTO activities (activity_name,activity_type,inserted_by,date_time,is_personal) VALUES (?,?,?,?,?)`,
               [activity_name,activity_type,username,datetime,is_personal]);
         
         // Getting the recently inserted ID
@@ -75,13 +75,13 @@ async function add_expense(datetime,activity_name,activity_type,is_personal,user
         if (activity_type === 'Income')
         {
             // ActivityID = extracted ActivityID , Username = username , Paid = 0 , Spent = 0 , Income = amount 
-            await pool.execute(`INSERT INTO activity_expenses (ActivityID,Username,Paid,Spent,Income) VALUES (?,?,0,0,?)`,
+            await pool.execute(`INSERT INTO activity_expenses (activity_id,username,paid,spent,income) VALUES (?,?,0,0,?)`,
                   [insertedActivityID,username,amount]);
         }
         else
         {
             // ActivityID = extracted ActivityID , Username = username , Paid = 0 , Spent = amount , Income = 0
-            await pool.execute(`INSERT INTO activity_expenses (ActivityID,Username,Paid,Spent,Income) VALUES (?,?,0,?,0)`,
+            await pool.execute(`INSERT INTO activity_expenses (activity_id,username,paid,spent,income) VALUES (?,?,0,?,0)`,
                   [insertedActivityID,username,amount]);
         }
         

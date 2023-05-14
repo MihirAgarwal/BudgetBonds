@@ -165,16 +165,38 @@ Announcement
 
 <br/>
 <br/>
-Settles
+to_settles
+<br/>
+
+- user1 gives to user2 <br/>
+- user1 - amount > user2 - amount => payamount + amount <br/>
+- user1 - amount < user2 - amount => payamount - amount <br/>
+<br/>
+<table>
+<tr>
+    <th>GroupID</th>
+    <th>PayAmount</th>
+    <th>user1</th>   
+    <th>user2</th>
+</tr>
+</table>
+
+
+<br/>
+<br/>
+
+
+
+<br/>
+<br/>
+settled
 <br/>
 
 <table>
 <tr>
     <th>GroupID</th>
-    <th>ActivityID</th>
     <th>PayAmount</th>
-    <th>PayTo</th>
-    <th>PayBy</th>
-    <th>IsSettled</th>
+    <th>sender</th>   
+    <th>reciever</th>
 </tr>
 </table>

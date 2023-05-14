@@ -205,11 +205,10 @@ DROP PROCEDURE get_group_logs;
 
 CREATE TABLE settles(
 	group_id INT NOT NULL,
-    activity_id INT NOT NULL,
+    activity_id INT DEFAULT NULL,
     pay_amount INT NOT NULL,
     pay_to VARCHAR(255) NOT NULL,
     pay_by VARCHAR(255) NOT NULL,
-    is_settled BOOLEAN default false,
     
     FOREIGN KEY (group_id) REFERENCES group_details(group_id),
     FOREIGN KEY (activity_id) REFERENCES activities(activity_id),
@@ -220,31 +219,38 @@ CREATE TABLE settles(
 DROP TABLE settles;
 
 
+
 DELIMITER //
 CREATE PROCEDURE get_aggregated_group_settles( IN Group_id INT , IN Username VARCHAR(255) )
 BEGIN
-	SELECT group_id , SUM(pay_amount) as give_amount , pay_to , pay_by
-    FROM settles 
-    WHERE group_id = Group_id AND settles.is_settled=0
-	GROUP BY group_id , pay_by , pay_to
-    HAVING ( pay_to = Username OR pay_by = Username ) AND group_id=Group_id;
-END //
-DELIMITER ;
+-- SELECT Group_id,Username;
+SELECT group_id,SUM(pay_amount) as give_amount,pay_to,pay_by FROM settles WHERE group_id=Group_id AND is_settled=0 GROUP BY pay_to,pay_by HAVING pay_to=Username OR pay_by=Username;
+END//
+DELIMITER ; 
+
 CALL get_aggregated_group_settles(1,'Shaun Phijo');
 DROP PROCEDURE get_aggregated_group_settles;
+
+SELECT * FROM settles;
+SELECT group_id,SUM(pay_amount) as give_amount,pay_to,pay_by FROM settles 
+WHERE group_id=1 AND is_settled=0 
+GROUP BY pay_to,pay_by 
+HAVING pay_to='Shaun Phijo' OR pay_by='Shaun Phijo';
+
 
 
 
 DELIMITER //
-CREATE PROCEDURE get_group_settles_of_two_members( IN Group_id INT , IN Username VARCHAR(255) , IN Username_2 VARCHAR(255) )
+CREATE PROCEDURE get_group_settles_of_two_members( IN Group_id INT , IN Username VARCHAR(255) , IN Username_2 VARCHAR(255) , IN start_row INT , IN end_row INT )
 BEGIN
 	SELECT settles.pay_amount , settles.pay_to , settles.pay_by , activities.activity_name
     FROM settles INNER JOIN activities ON settles.activity_id = activities.activity_id  
     WHERE settles.group_id = Group_id 
-    AND ( ( settles.pay_to = Username AND settles.pay_by = Username_2 ) OR ( settles.pay_to = Username_2 AND settles.pay_by = Username ) ) ;
+    AND ( ( settles.pay_to = Username AND settles.pay_by = Username_2 ) OR ( settles.pay_to = Username_2 AND settles.pay_by = Username ) ) 
+    LIMIT start_row,end_row ;
 END //
 DELIMITER ;
-CALL get_group_settles_of_two_members( 1 , 'abc123' , 'aabb' );
+CALL get_group_settles_of_two_members( 2 , 'Shaun Phijo' , 'Mihir Agarwal' , 0 , 30 );
 DROP PROCEDURE get_group_settles_of_two_members;
 
 USE BudgetBonds;
@@ -266,7 +272,8 @@ DROP TABLE activity_expenses;
 DROP TABLE user_logs;
 DROP TABLE settles;
 
-
+SELECT * FROM settles WHERE group_id=2 AND pay_by='Shaun Phijo' AND pay_to='Mihir Agarwal'; 
+SELECT SUM(pay_amount) as actual_amount FROM settles WHERE group_id=2 GROUP BY group_id,pay_by,pay_to HAVING pay_by='Shaun Phijo' AND pay_to='Mihir Agarwal';
 
 
 
@@ -277,3 +284,4 @@ INSERT INTO group_details (group_name,made_by,icon) VALUES ("Always-Broke","Shau
 INSERT INTO group_members (group_id,username) VALUES (1,"Shaun Phijo") , (1,"Keval Pambar") , (1,"Alia Bhatt") , (1,"Selena Gomez") , (1,"Hussain Rangwala") , (2,"Yashraj Jarande") , (2,"Shaun Phijo") , (2,"Mihir Agarwal") , (2,"Shree Bohra") , (2,"Viren Kadam");
 INSERT INTO activities (group_id,activity_id,activity_name,activity_type,inserted_by,date_time,is_personal) VALUES (1,1,"Pizza","Food","Shaun Phijo","2023-05-04 23:36:53",0) , (2,2,"Petrol","Transportation","Yashraj Jarande","2023-03-03 15:45:23",0) , (2,3,"Groceries","Food","Viren Kadam","2023-03-12 09:30:00",0) , (1,4,"Books","Education","Keval Pambar","2023-03-13 09:30:00",0) , (2,5,"Printouts","Education","Mihir Agarwal","2023-03-19 09:30:00",0) , (2,6,"Curtains","Household","Shaun Phijo","2023-03-21 10:43:00",0) , (1,7,"Perfume","Other","Alia Bhatt","2023-03-23 16:20:00",0) , (null,8,"Tshirt","Apparel","Shree Bohra","2023-03-27 09:56:00",1) , (null,9,"Shoes","Apparel","Shaun Phijo","2023-03-30 09:54:00",1) , (1,10,"Rent","Household","Hussain Rangwala","2023-04-02 17:31:00",0) , (2,11,"Club Entry","Other","Yashraj Jarande","2023-04-04 21:00:00",0) , (2,12,"Rickshaw","Transportation","Viren Kadam","2023-04-04 20:29:00",0) , (1,13,"Dinner","food","Shaun Phijo","2023-04-10 19:53:00",0);
 INSERT INTO activity_expenses (activity_id,username,paid,spent,income) VALUES (1,"Shaun Phijo",300,150,0) , (1,"Keval Pambar",0,150,0) , (1,"Alia Bhatt",150,150,0) , (1,"Selena Gomez",0,150,0) , (1,"Hussain Rangwala",300,150,0) , (2,"Yashraj Jarande",500,200,0) , (2,"Shaun Phijo",0,0,0) , (2,"Mihir Agarwal",100,300,0) , (2,"Shree Bohra",0,0,0) , (2,"Viren Kadam",0,100,0) , (3,"Yashraj Jarande",0,66,0) , (3,"Shaun Phijo",0,66,0) , (3,"Mihir Agarwal",330,66,0) , (3,"Shree Bohra",0,66,0) , (3,"Viren Kadam",0,66,0) , (4,"Shaun Phijo",550,325,0) , (4,"Keval Pambar",100,325,0) , (4,"Alia Bhatt",0,0,0) , (4,"Selena Gomez",0,0,0) , (4,"Hussain Rangwala",0,0,0) , (5,"Yashraj Jarande",20,13,0) , (5,"Shaun Phijo",0,13,0) , (5,"Mihir Agarwal",0,13,0) , (5,"Shree Bohra",20,13,0) , (5,"Viren Kadam",25,13,0) , (6,"Yashraj Jarande",1500,300,0) , (6,"Shaun Phijo",0,300,0) , (6,"Mihir Agarwal",0,300,0) , (6,"Shree Bohra",0,300,0) , (6,"Viren Kadam",0,300,0) , (7,"Shaun Phijo",0,0,0) , (7,"Keval Pambar",0,0,0) , (7,"Alia Bhatt",250,175,0) , (7,"Selena Gomez",100,175,0) , (7,"Hussain Rangwala",0,0,0) , (8,"Shree Bohra",800,800,0) , (9,"Shaun Phijo",9499,9499,0) , (10,"Shaun Phijo",8000,8000,0) , (10,"Keval Pambar",9000,8000,0) , (10,"Alia Bhatt",7000,8000,0) , (10,"Selena Gomez",4500,8000,0) , (10,"Hussain Rangwala",11500,8000,0) , (11,"Yashraj Jarande",0,330,0) , (11,"Shaun Phijo",0,330,0) , (11,"Mihir Agarwal",1000,330,0) , (11,"Shree Bohra",500,330,0) , (11,"Viren Kadam",150,330,0) , (12,"Yashraj Jarande",0,0,0) , (12,"Shaun Phijo",0,0,0) , (12,"Mihir Agarwal",30,40,0) , (12,"Shree Bohra",90,40,0) , (12,"Viren Kadam",0,40,0) , (13,"Shaun Phijo",1000,459,0) , (13,"Keval Pambar",1000,459,0) , (13,"Alia Bhatt",0,459,0) , (13,"Selena Gomez",295,459,0) , (13,"Hussain Rangwala",0,459,0);
+

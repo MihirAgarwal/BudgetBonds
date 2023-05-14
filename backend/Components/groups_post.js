@@ -38,6 +38,7 @@ module.exports.groups_post = async (req,res,next)=>{
         console.log(query);
 		result = await pool.execute( query , parameters_to_insert );
         console.log(result);
+		
 
         // Insert the group creater in the group
         result = await pool.execute(`INSERT INTO group_members (group_id,username) VALUES (?,?)`,[inserted_grp_ID,username]);
@@ -56,3 +57,4 @@ const validate_request = (request_body)=>{
     // if username in members array send bad request
 	return;
 }
+

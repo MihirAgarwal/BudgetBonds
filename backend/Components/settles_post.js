@@ -14,8 +14,7 @@ module.exports.settles_post = async (req,res,next)=>{
         let is_valid_request = validate_request(request_body);
         if(is_valid_request instanceof Error) throw is_valid_request;
     
-        const {group_id , username , amount , pay_to , action} = request_body;
-        const pay_by = username;
+        const {group_id , pay_by , username , amount , pay_to , action} = request_body;
         console.log(request_body);
 
         // Check if the pay_by is eligibe to give that much amount 
@@ -24,32 +23,18 @@ module.exports.settles_post = async (req,res,next)=>{
         let is_amount_eligibe = await check_amount_eligiblity(pay_by,pay_to,amount,group_id,action);
         if(is_amount_eligibe instanceof Error) throw is_amount_eligibe;
         
-        // For Settle
-        if(action==="Settle")
-        {
-            //Inserting entry into settle
-            await settle_amount(group_id,amount,pay_by,pay_to);
 
-            // Inserting logs
-            await settle_log(group_id , pay_by , pay_to , amount);
+        //inserting to settled table
+        await insert_to_unsettled(group_id,amount,pay_by,pay_to,action);
 
-            // Updating group_members table
-            await update_group_members(group_id,pay_by,pay_to,amount);
-        }
+        // updating to_settle table
+        await update_to_settle(group_id,amount,pay_by,pay_to,action);
 
+        // inserting entry in user_logs table
+        await inserting_log(group_id,amount,pay_by,pay_to,action,username);
 
-        // For Unsettle
-        if(action==="Unsettle")
-        {
-            // Inserting into settle with negative amount
-            await unsettle_amount(group_id , amount , pay_by , pay_to);
-
-            // Inserting log
-            await unsettle_log(group_id , pay_by , pay_to , amount);
-
-            // Updating group_members_table
-            await update_group_table()
-        }
+        //updating group_members table
+        await update_group_members(group_id,amount,pay_by,pay_to,action);
 
         res.json({"message":"SETTLES POST"});
         
@@ -68,48 +53,55 @@ function validate_request(request_body)
 }
 
 
-async function check_amount_eligiblity(pay_by,pay_to,amount,group_id,action)
+async function insert_to_unsettled(group_id,amount,pay_by,pay_to,action)
 {
-    const query = `SELECT SUM(pay_amount) as actual_amount FROM settles WHERE group_id=? GROUP BY group_id,pay_by,pay_to HAVING pay_by=? AND pay_to=?`;
-    const query_array = [group_id,pay_by,pay_to];
+    if(action==='Settle') amount=amount;
+    else amount = -1*amount;
 
-    const [rows,cols] = await pool.execute(query,query_array);
-    console.log(rows[0]["actual_amount"]);
-    const actual_amount = rows[0]["actual_amount"];
-
-    if(action==="Settle" && actual_amount < amount) return create_error('Settling More amount then spent!!!',400)
-    return true;
+    const query = `INSERT INTO settled (group_id,amount,pay_by,pay_to) VALUES (?,?,?,?)`;
+    await pool.execute(query,[group_id,amount,pay_by,pay_to]);
 }
 
-
-async function settle_amount(group_id,amount,pay_by,pay_to)
+// user1 takes amount positive
+// user2 is paying => amount = amount - amt
+async function update_to_settle(group_id , amount , pay_by , pay_to , action)
 {
-    const settle_query = `INSERT INTO settles (group_id , pay_amount , pay_to , pay_by) VALUES (?,?,?,?)`;
-    const settle_array = [group_id,amount,pay_by,pay_to];
-    await pool.execute(settle_query,settle_array);
+    if(action==='Settle') amount=amount;
+    else amount = -1*amount;
+
+    const query = `UPDATE to_settle SET amount = amount - ? WHERE group_id=? AND user1=? AND user2=?`;
+    const parameter_array_1 = [amount,group_id,pay_to,pay_by];
+    const parameter_array_2 = [-1*amount,group_id,pay_by,pay_to];
+
+    await pool.execute(query,parameter_array_1);
+    await pool.execute(query,parameter_array_2);
 }
 
-async function settle_log(group_id , pay_by , pay_to , amount )
+async function inserting_log(group_id,amount,pay_by,pay_to,action,username)
 {
-    const log = `${pay_by} paid ${amount} to ${pay_to}`;
-    const log_query = `INSERT INTO user_logs (group_id,log_by,log_for,user_log) VALUES (?,?,?,?)`;
-    const log_array = [group_id,pay_by,pay_to,log];
-
-    await pool.execute(log_query,log_array);
-}
-
-async function update_group_members(group_id,pay_by,pay_to,amount)
-{
-    const update_query_pay_by = `UPDATE group_members SET paid=paid+? WHERE group_id=? AND username=?`;
-    const update_query_pay_by_array = [amount,group_id,pay_by];
+    let log = `Amount ${amount} was ${action}d by ${username}`;
     
-    const update_query_pay_to = `UPDATE group_members SET paid=paid-? WHERE group_id=? AND username=?`;
-    const update_query_pay_to_array = [amount,group_id,pay_to];
-
-    await pool.execute(update_query_pay_by,update_query_pay_by_array);
-    await pool.execute(update_query_pay_to,update_query_pay_to_array);
+    let log_for;
+    if(pay_by===username) log_for = pay_to;
+    else log_for = pay_by; 
+    
+    const query = `INSERT INTO user_logs (group_id,log_by,log_for,user_log) VALUES (?,?,?,?)`;
+    
+    await pool.execute(query,[group_id,username,log_for,log]);
 }
 
+async function update_group_members(group_id,amount,pay_by,pay_to,action)
+{
+    if(action==='Settle') amount=amount;
+    else amount = -1*amount;
 
-// 5000 spent and 2000 pay ==> has to give 3000 , pay+3000
-// 5000 pay and 2000 spent ==> has to take 3000 , pay-3000 
+    // for one who paid settle
+    const query = `UPDATE group_members SET paid=paid+? WHERE group_id=? AND username=?`;
+    const parameter_array_1 = [amount,group_id,pay_by];
+
+    // for one who recieved settle
+    const parameter_array_2 = [-1*amount,group_id,pay_to];
+    
+    await pool.execute(query,parameter_array_1);
+    await pool.execute(query,parameter_array_2);
+}

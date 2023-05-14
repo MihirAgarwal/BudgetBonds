@@ -1,7 +1,7 @@
 const { create_error } = require('../utils/create_error');
 const pool = require('../DB/db');
 
-//      https://localhost:2600/api/groups/:group_id/activities
+//      http://localhost:2600/api/groups/:group_id/activities
 
 
 module.exports.activities_post = async (req,res,next)=>{
@@ -105,33 +105,16 @@ async function add_to_logs(group_id,activity_name,username)
 async function add_payments_to_settle_table(group_id,activity_id,expenses)
 {
     const data_array_objects = calculate_payments_to_be_settled(expenses);
-    //console.log(data_array_objects);
+    console.log(data_array_objects);
     if(data_array_objects.length > 0)
     {
-        let settles_array = [];
-        let settles_query = `INSERT INTO settles ( group_id , activity_id , pay_amount , pay_to , pay_by ) VALUES `;
-        
-        for(let i = 0 ; i < data_array_objects.length ; i++)
+        for(let i=0 ; i<data_array_objects.length ; i+=1)
         {
-            
-            let pay_amount = data_array_objects[i]["pay_amount"];
-            let pay_by = data_array_objects[i]["pay_by"];
-            let pay_to = data_array_objects[i]["pay_to"];
+            let {pay_to , pay_by , pay_amount} = data_array_objects[i];
 
-            settles_array.push(parseInt(group_id));
-            settles_array.push(activity_id);
-            settles_array.push(pay_amount);
-            settles_array.push(pay_to);
-            settles_array.push(pay_by);
-            
-            settles_query = settles_query + `(?,?,?,?,?)`;
-            if( i != data_array_objects.length-1 ) settles_query = settles_query + ` , `;
-            
+            await pool.execute(`UPDATE to_settle SET pay_amount = pay_amount + ? WHERE group_id = ? AND user1 = ? AND user2 = ?`,[pay_amount , group_id , pay_to , pay_by]);
+            await pool.execute(`UPDATE to_settle SET pay_amount = pay_amount - ? WHERE group_id = ? AND user1 = ? AND user2 = ?`,[pay_amount , group_id , pay_by , pay_to]);
         }
-
-        console.log("SETTLES QUERY ============> ",settles_query);
-        console.log("SETTLES ARRAY ============>",settles_array);
-        await pool.execute( settles_query , settles_array );
     }
 }
 
