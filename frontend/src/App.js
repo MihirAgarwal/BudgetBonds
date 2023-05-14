@@ -11,38 +11,49 @@ import {QueryClient,QueryClientProvider} from "@tanstack/react-query";
 import Activities from "./pages/Activities";
 import GroupHeader from "./components/GroupHeader";
 import Logs from "./pages/Logs";
+import Reports from "./pages/Reports";
+import Accounts from "./pages/Accounts";
 
 function App() {
   const client = new QueryClient();
   return (
     <QueryClientProvider client = {client}>
     <Router>
+
+
       <Routes>
-      <Route path = "/" index element={<SignIn/>} />
-      <Route path = "/addExpense" element={<Addexpense/>} />
-      <Route path = "/addGroup" element={<AddGroup />} />
-      <Route path = "/signup" element={<SignUp />} />
-      <Route element = {
-        <>
-        <GroupHeader />
-        <Outlet></Outlet>
-        </>
-      }>
-        <Route path = "/activities" element={<Activities />} />
-        <Route path = "/logs" element={<Logs />} />
-      </Route>
+        <Route path = "/" index element={<SignIn/>} />
+        <Route path = "/addExpense" element={<Addexpense/>} />
+        <Route path = "/addGroup" element={<AddGroup />} />
+        <Route path = "/signup" element={<SignUp />} />
+        
+
+        <Route element = {
+          <>
+          <GroupHeader />
+          <Outlet></Outlet>
+          </>
+        }>
+          <Route path = "/activities" element={<Activities />} />
+          <Route path = "/logs" element={<Logs />} />
+        </Route>
+        
+        
+        <Route element = {
+          <>
+          <Header />
+          <Outlet></Outlet>
+          </>
+        }>
+          <Route path = "/home" element={<Home />} />
+          <Route path = "/groups" element={<Groups />} />
+          <Route path = "/reports" element={<Reports />} />
+          <Route path = "/accounts" element={<Accounts />} />
+
+        </Route>
       
-      
-      <Route element = {
-        <>
-        <Header />
-        <Outlet></Outlet>
-        </>
-      }>
-      <Route path = "/home" element={<Home />} />
-      <Route path = "/groups" element={<Groups />} />
-      </Route>
       </Routes>
+
     </Router>
     </QueryClientProvider>
   );
