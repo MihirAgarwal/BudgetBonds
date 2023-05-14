@@ -16,7 +16,7 @@ module.exports.personal_expense_post = async (req,res,next)=>{
         let {datetime , activity_name , activity_type , username , amount} = request_body ;
 
         // Adding the activities
-        let is_expense_inserted = await add_expense(datetime,activity_name,activity_type,is_personal,username,amount);
+        let is_expense_inserted = await add_expense(datetime,activity_name,activity_type,username,amount);
         if(is_expense_inserted instanceof Error) throw create_error();
 
 
@@ -39,7 +39,7 @@ function validate_request(request_body)
     // activity_type should be a string and should belong to the set only
     let is_activity_type_string = typeof request_body['activity_type']==='string' ? true : false ;
     // Enter the valid activities types
-    let valid_activities = new Set([]);
+    let valid_activities = new Set(['Food' , 'Household' , 'Apparel' , 'Education' , 'Transportation' , 'Other']);
     let is_activity_type_valid = is_activity_type_string && valid_activities.has(request_body['activity_type']) ; 
 
     // amount should be an integer and should be greater than 0
@@ -54,34 +54,36 @@ function validate_request(request_body)
                                && is_amount_valid 
                                && are_only_required_fields_present ;
                                
-
+    console.log(is_datetime_valid,is_activity_name_valid,is_activity_type_valid,is_amount_valid,are_only_required_fields_present)
     if(is_conditions_satisfied) return true ;
     else return create_error('Invalid Request!!!',400);
 }
 
 
-async function add_expense(datetime,activity_name,activity_type,is_personal,username,amount)
+async function add_expense(datetime,activity_name,activity_type,username,amount)
 {
     try {
         
 
         // GroupID=null , ActivityID=AutoIncrement , ActivityName=activity_name , ActivityType=activity_type , InsertedBy=username , DateTime=datetime , IsPersonal=true
-        let result = await pool.execute(`INSERT INTO activities (ActivityName,ActivityType,InsertedBy,DateTime,IsPersonal) VALUES (?,?,?,?,?)`,
-              [activity_name,activity_type,username,datetime,is_personal]);
+        let result = await pool.execute(`INSERT INTO activities (activity_name,activity_type,inserted_by,date_time,is_personal) VALUES (?,?,?,?,1)`,
+              [activity_name,activity_type,username,datetime]);
         
         // Getting the recently inserted ID
-        let insertedActivityID = result.insertId;
-    
+        let insertedActivityID = result[0]['insertId'];
+        
+        
+
         if (activity_type === 'Income')
         {
             // ActivityID = extracted ActivityID , Username = username , Paid = 0 , Spent = 0 , Income = amount 
-            await pool.execute(`INSERT INTO activity_expenses (ActivityID,Username,Paid,Spent,Income) VALUES (?,?,0,0,?)`,
+            await pool.execute(`INSERT INTO activity_expenses (activity_id,username,paid,spent,income) VALUES (?,?,0,0,?)`,
                   [insertedActivityID,username,amount]);
         }
         else
         {
             // ActivityID = extracted ActivityID , Username = username , Paid = 0 , Spent = amount , Income = 0
-            await pool.execute(`INSERT INTO activity_expenses (ActivityID,Username,Paid,Spent,Income) VALUES (?,?,0,?,0)`,
+            await pool.execute(`INSERT INTO activity_expenses (activity_id,username,paid,spent,income) VALUES (?,?,0,?,0)`,
                   [insertedActivityID,username,amount]);
         }
         
